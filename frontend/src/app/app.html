@@ -1,0 +1,23 @@
+<mat-toolbar color="primary">
+  <mat-icon>smart_toy</mat-icon>
+  <span class="app-title">AI News Dashboard</span>
+
+  <nav class="nav-links">
+    <a mat-button routerLink="/dashboard" routerLinkActive="active">
+      <mat-icon>dashboard</mat-icon> Dashboard
+    </a>
+    <a mat-button routerLink="/hacker-news" routerLinkActive="active">
+      <mat-icon>whatshot</mat-icon> Hacker News
+    </a>
+    <a mat-button routerLink="/github-releases" routerLinkActive="active">
+      <mat-icon>code</mat-icon> Releases
+    </a>
+    <a mat-button routerLink="/rss-feeds" routerLinkActive="active">
+      <mat-icon>rss_feed</mat-icon> RSS
+    </a>
+  </nav>
+</mat-toolbar>
+
+<main>
+  <router-outlet />
+</main>

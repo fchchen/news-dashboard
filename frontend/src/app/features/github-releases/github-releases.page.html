@@ -1,0 +1,65 @@
+<div class="page-container">
+  <h1>AI CLI Tool Releases</h1>
+  <p class="subtitle">Latest releases from Claude Code, Codex CLI, Cursor, Aider, Cline, and Continue</p>
+
+  @if (isLoading()) {
+    <div class="loading-spinner">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else {
+    <div class="release-grid">
+      @for (item of items(); track item.id) {
+        <mat-card class="release-card">
+          <mat-card-header>
+            <mat-icon mat-card-avatar>code</mat-icon>
+            <mat-card-title>
+              <a [href]="item.url" target="_blank" rel="noopener">{{ item.title }}</a>
+            </mat-card-title>
+            <mat-card-subtitle>
+              <app-company-badge [company]="item.company" />
+              @if (item.metadata['repoFullName']) {
+                <span class="repo-name">{{ item.metadata['repoFullName'] }}</span>
+              }
+            </mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            @if (item.metadata['version']) {
+              <div class="version-badge">
+                <mat-icon>label</mat-icon>
+                <span>v{{ item.metadata['version'] }}</span>
+                @if (item.metadata['isPreRelease'] === 'true') {
+                  <mat-chip>pre-release</mat-chip>
+                }
+              </div>
+            }
+            @if (item.description) {
+              <p class="changelog-preview">{{ item.description }}</p>
+            }
+            <div class="release-meta">
+              <span class="published">{{ item.publishedAt | date:'mediumDate' }}</span>
+              @if (item.author) {
+                <span class="author">by {{ item.author }}</span>
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+      } @empty {
+        <mat-card class="empty-state">
+          <mat-icon>code_off</mat-icon>
+          <p>No release data yet. Data will appear after the first background fetch.</p>
+        </mat-card>
+      }
+    </div>
+
+    @if (totalCount() > 0) {
+      <mat-paginator
+        [length]="totalCount()"
+        [pageSize]="pageSize()"
+        [pageIndex]="page() - 1"
+        [pageSizeOptions]="[10, 20, 50]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons>
+      </mat-paginator>
+    }
+  }
+</div>

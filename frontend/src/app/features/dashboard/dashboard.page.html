@@ -1,0 +1,115 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>AI News Intelligence Dashboard</h1>
+    @if (data()?.lastFetchedAt) {
+      <span class="last-fetched">Last updated: {{ data()!.lastFetchedAt | date:'short' }}</span>
+    }
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-spinner">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else if (data()) {
+    <!-- Stats Row -->
+    <div class="stats-grid">
+      <mat-card class="stat-card">
+        <mat-icon>whatshot</mat-icon>
+        <div class="stat-value">{{ data()!.stats.hackerNewsCount }}</div>
+        <div class="stat-label">HN Posts</div>
+      </mat-card>
+      <mat-card class="stat-card">
+        <mat-icon>code</mat-icon>
+        <div class="stat-value">{{ data()!.stats.gitHubReleaseCount }}</div>
+        <div class="stat-label">Releases</div>
+      </mat-card>
+      <mat-card class="stat-card">
+        <mat-icon>rss_feed</mat-icon>
+        <div class="stat-value">{{ data()!.stats.rssArticleCount }}</div>
+        <div class="stat-label">Articles</div>
+      </mat-card>
+      <mat-card class="stat-card trending-card">
+        <mat-icon>trending_up</mat-icon>
+        <div class="trending-topics">
+          @for (topic of data()!.trendingTopics.slice(0, 5); track topic.topic) {
+            <span class="topic-tag">#{{ topic.topic }}</span>
+          } @empty {
+            <span class="no-data">No trends yet</span>
+          }
+        </div>
+        <div class="stat-label">Trending</div>
+      </mat-card>
+    </div>
+
+    <!-- Company Comparison -->
+    <div class="company-grid">
+      @for (company of data()!.companies; track company.company) {
+        <mat-card class="company-card" [class]="'company-' + company.company.toLowerCase()">
+          <app-company-badge [company]="company.company" />
+          <div class="company-count">{{ company.itemCount }} items</div>
+        </mat-card>
+      }
+    </div>
+
+    <!-- Latest Releases -->
+    @if (data()!.latestReleases.length > 0) {
+      <div class="section">
+        <div class="section-header">
+          <h2>Latest Releases</h2>
+          <a mat-button routerLink="/github-releases">View all</a>
+        </div>
+        <div class="card-grid">
+          @for (release of data()!.latestReleases; track release.id) {
+            <mat-card class="release-card">
+              <mat-card-header>
+                <mat-icon mat-card-avatar>code</mat-icon>
+                <mat-card-title>
+                  <a [href]="release.url" target="_blank" rel="noopener">{{ release.title }}</a>
+                </mat-card-title>
+                <mat-card-subtitle>
+                  <app-company-badge [company]="release.company" />
+                  @if (release.metadata['version']) {
+                    <span>v{{ release.metadata['version'] }}</span>
+                  }
+                </mat-card-subtitle>
+              </mat-card-header>
+            </mat-card>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Hot on Hacker News -->
+    @if (data()!.hotItems.length > 0) {
+      <div class="section">
+        <div class="section-header">
+          <h2>Hot on Hacker News</h2>
+          <a mat-button routerLink="/hacker-news">View all</a>
+        </div>
+        @for (item of data()!.hotItems; track item.id) {
+          <app-news-card [item]="item" />
+        }
+      </div>
+    }
+
+    <!-- Latest Blog Posts -->
+    @if (data()!.latestBlogPosts.length > 0) {
+      <div class="section">
+        <div class="section-header">
+          <h2>Latest Blog Posts</h2>
+          <a mat-button routerLink="/rss-feeds">View all</a>
+        </div>
+        @for (item of data()!.latestBlogPosts; track item.id) {
+          <app-news-card [item]="item" />
+        }
+      </div>
+    }
+
+    @if (data()!.stats.totalCount === 0) {
+      <mat-card class="empty-state">
+        <mat-icon>sync</mat-icon>
+        <p>No data yet. The background service will fetch news within 30 seconds of startup, or you can trigger a manual refresh via <code>POST /api/refresh</code>.</p>
+      </mat-card>
+    }
+  }
+</div>

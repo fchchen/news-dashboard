@@ -1,0 +1,46 @@
+<div class="page-container">
+  <h1>AI News &amp; Blog Posts</h1>
+  <p class="subtitle">Official blogs from Anthropic and OpenAI, plus AI-focused tech news</p>
+
+  <!-- Source filter chips -->
+  <mat-chip-set class="source-filters">
+    <mat-chip-option
+      [selected]="!selectedSource()"
+      (selectionChange)="selectSource(undefined)">
+      All Sources
+    </mat-chip-option>
+    @for (source of sources(); track source.name) {
+      <mat-chip-option
+        [selected]="selectedSource() === source.name"
+        (selectionChange)="selectSource(source.name)">
+        {{ source.name }}
+      </mat-chip-option>
+    }
+  </mat-chip-set>
+
+  @if (isLoading()) {
+    <div class="loading-spinner">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else {
+    @for (item of items(); track item.id) {
+      <app-news-card [item]="item" />
+    } @empty {
+      <mat-card class="empty-state">
+        <mat-icon>rss_feed</mat-icon>
+        <p>No RSS articles found yet. Data will appear after the first background fetch.</p>
+      </mat-card>
+    }
+
+    @if (totalCount() > 0) {
+      <mat-paginator
+        [length]="totalCount()"
+        [pageSize]="pageSize()"
+        [pageIndex]="page() - 1"
+        [pageSizeOptions]="[10, 20, 50]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons>
+      </mat-paginator>
+    }
+  }
+</div>
