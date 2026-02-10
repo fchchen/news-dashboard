@@ -57,12 +57,10 @@
           },
           "configurations": {
             "production": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
+              "define": {
+                "import.meta.env.STATIC_DATA": "true",
+                "import.meta.env.API_URL": "'./data'"
+              },
               "budgets": [
                 {
                   "type": "initial",
