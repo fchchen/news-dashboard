@@ -23,7 +23,7 @@ public static class HackerNewsEndpoints
         IHackerNewsService hackerNewsService)
     {
         page = page < 1 ? 1 : page;
-        pageSize = pageSize < 1 ? 20 : pageSize > 100 ? 100 : pageSize;
+        pageSize = pageSize < 1 ? 20 : pageSize > 1000 ? 1000 : pageSize;
 
         var items = await hackerNewsService.GetCachedItemsAsync(page, pageSize);
         var totalCount = await hackerNewsService.GetCachedCountAsync();

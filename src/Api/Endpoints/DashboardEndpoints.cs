@@ -39,7 +39,7 @@ public static class DashboardEndpoints
         INewsDashboardService dashboardService)
     {
         page = page < 1 ? 1 : page;
-        pageSize = pageSize < 1 ? 20 : pageSize > 100 ? 100 : pageSize;
+        pageSize = pageSize < 1 ? 20 : pageSize > 1000 ? 1000 : pageSize;
 
         var result = await dashboardService.GetUnifiedFeedAsync(page, pageSize, source, company);
         return Results.Ok(result);

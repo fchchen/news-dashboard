@@ -79,13 +79,13 @@ echo "==> Capturing API responses..."
 curl -sf "$API_URL/api/dashboard" -o "$OUTPUT_DIR/dashboard.json"
 echo "    dashboard.json"
 
-curl -sf "$API_URL/api/hackernews?page=1&pageSize=100" -o "$OUTPUT_DIR/hackernews.json"
+curl -sf "$API_URL/api/hackernews?page=1&pageSize=1000" -o "$OUTPUT_DIR/hackernews.json"
 echo "    hackernews.json"
 
-curl -sf "$API_URL/api/github/releases?page=1&pageSize=100" -o "$OUTPUT_DIR/github-releases.json"
+curl -sf "$API_URL/api/github/releases?page=1&pageSize=1000" -o "$OUTPUT_DIR/github-releases.json"
 echo "    github-releases.json"
 
-curl -sf "$API_URL/api/rss?page=1&pageSize=100" -o "$OUTPUT_DIR/rss.json"
+curl -sf "$API_URL/api/rss?page=1&pageSize=1000" -o "$OUTPUT_DIR/rss.json"
 echo "    rss.json"
 
 curl -sf "$API_URL/api/news/trends" -o "$OUTPUT_DIR/trends.json"

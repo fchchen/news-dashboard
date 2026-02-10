@@ -27,7 +27,7 @@ public static class RssFeedEndpoints
         IRssFeedService rssFeedService)
     {
         page = page < 1 ? 1 : page;
-        pageSize = pageSize < 1 ? 20 : pageSize > 100 ? 100 : pageSize;
+        pageSize = pageSize < 1 ? 20 : pageSize > 1000 ? 1000 : pageSize;
 
         var items = await rssFeedService.GetCachedItemsAsync(page, pageSize, source);
         var totalCount = await rssFeedService.GetCachedCountAsync(source);

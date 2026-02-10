@@ -29,11 +29,14 @@ export class NewsService {
     return this.cache.get(url)!;
   }
 
-  private staticPage<T>(items: T[], page: number, pageSize: number): PagedResponse<T> {
+  private staticPage(items: NewsItemDto[], page: number, pageSize: number): PagedResponse<NewsItemDto> {
+    const sorted = [...items].sort((a, b) =>
+      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+    );
     const start = (page - 1) * pageSize;
     return {
-      items: items.slice(start, start + pageSize),
-      totalCount: items.length,
+      items: sorted.slice(start, start + pageSize),
+      totalCount: sorted.length,
       page,
       pageSize
     };

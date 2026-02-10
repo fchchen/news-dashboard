@@ -26,7 +26,7 @@ public static class GitHubReleasesEndpoints
         IGitHubReleasesService releasesService)
     {
         page = page < 1 ? 1 : page;
-        pageSize = pageSize < 1 ? 20 : pageSize > 100 ? 100 : pageSize;
+        pageSize = pageSize < 1 ? 20 : pageSize > 1000 ? 1000 : pageSize;
 
         var items = await releasesService.GetCachedItemsAsync(page, pageSize);
         var totalCount = await releasesService.GetCachedCountAsync();
@@ -46,7 +46,7 @@ public static class GitHubReleasesEndpoints
         IGitHubReleasesService releasesService)
     {
         page = page < 1 ? 1 : page;
-        pageSize = pageSize < 1 ? 20 : pageSize > 100 ? 100 : pageSize;
+        pageSize = pageSize < 1 ? 20 : pageSize > 1000 ? 1000 : pageSize;
 
         var items = await releasesService.GetCachedByRepoAsync(owner, repo, page, pageSize);
         var totalCount = await releasesService.GetCachedByRepoCountAsync(owner, repo);
