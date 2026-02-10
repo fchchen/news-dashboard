@@ -4,7 +4,7 @@ on:
   push:
     branches: [master]
   schedule:
-    - cron: '0 */6 * * *' # every 6 hours
+    - cron: '0 */2 * * *' # every 2h; filtered to 8AM-10PM Eastern below
   workflow_dispatch:
 
 permissions:
@@ -23,6 +23,16 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Check Eastern time window
+        if: github.event_name == 'schedule'
+        run: |
+          HOUR=$(TZ='America/New_York' date +%H)
+          echo "Eastern hour: $HOUR"
+          if [ "$HOUR" -lt 8 ] || [ "$HOUR" -ge 22 ]; then
+            echo "Outside 8AM-10PM Eastern, skipping."
+            exit 1
+          fi
+
       - uses: actions/checkout@v4
 
       - name: Setup .NET 8
