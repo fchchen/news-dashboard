@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatChipsModule } from '@angular/material/chips';
+import { MatChipsModule, MatChipListboxChange } from '@angular/material/chips';
 import { tap, catchError } from 'rxjs/operators';
 import { of, forkJoin } from 'rxjs';
 import { NewsService } from '../../services/news.service';
@@ -67,8 +67,9 @@ export class RssFeedsPage implements OnInit {
     ).subscribe();
   }
 
-  selectSource(source: string | undefined): void {
-    this.selectedSource.set(source);
+  onChipChange(event: MatChipListboxChange): void {
+    const value = event.value === 'all' ? undefined : event.value;
+    this.selectedSource.set(value);
     this.page.set(1);
     this.loadData();
   }

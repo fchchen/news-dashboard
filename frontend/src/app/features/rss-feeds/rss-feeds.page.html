@@ -3,20 +3,16 @@
   <p class="subtitle">Official blogs from Anthropic and OpenAI, plus AI-focused tech news</p>
 
   <!-- Source filter chips -->
-  <mat-chip-set class="source-filters">
-    <mat-chip-option
-      [selected]="!selectedSource()"
-      (selectionChange)="selectSource(undefined)">
+  <mat-chip-listbox class="source-filters" [value]="selectedSource() ?? 'all'" (change)="onChipChange($event)">
+    <mat-chip-option value="all">
       All Sources
     </mat-chip-option>
     @for (source of sources(); track source.name) {
-      <mat-chip-option
-        [selected]="selectedSource() === source.name"
-        (selectionChange)="selectSource(source.name)">
+      <mat-chip-option [value]="source.name">
         {{ source.name }}
       </mat-chip-option>
     }
-  </mat-chip-set>
+  </mat-chip-listbox>
 
   @if (isLoading()) {
     <div class="loading-spinner">

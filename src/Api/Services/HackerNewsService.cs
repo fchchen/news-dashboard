@@ -26,7 +26,7 @@ public class HackerNewsService : IHackerNewsService
         _logger = logger;
     }
 
-    public async Task<IEnumerable<NewsItem>> FetchAndFilterAsync(int maxStories = 100)
+    public async Task<IEnumerable<NewsItem>> FetchAndFilterAsync(int maxStories = 500)
     {
         _logger.LogInformation("Fetching top stories from Hacker News");
 
