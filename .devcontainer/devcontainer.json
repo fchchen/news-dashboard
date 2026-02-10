@@ -1,0 +1,23 @@
+{
+  "name": "News Dashboard",
+  "image": "mcr.microsoft.com/devcontainers/dotnet:8.0",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "22"
+    }
+  },
+  "forwardPorts": [5000, 4200],
+  "portsAttributes": {
+    "5000": { "label": "API", "onAutoForward": "notify" },
+    "4200": { "label": "Angular", "onAutoForward": "openBrowser" }
+  },
+  "postCreateCommand": "dotnet restore && cd frontend && npm install",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csharp",
+        "Angular.ng-template"
+      ]
+    }
+  }
+}

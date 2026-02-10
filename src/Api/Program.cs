@@ -51,8 +51,15 @@ builder.Services.AddHttpClient<IHackerNewsService, HackerNewsService>();
 builder.Services.AddHttpClient<IGitHubReleasesService, GitHubReleasesService>();
 builder.Services.AddHttpClient<IRssFeedService, RssFeedService>();
 
-// Register Services
-builder.Services.AddScoped<ICosmosDbService, CosmosDbService>();
+// Register storage service
+if (string.IsNullOrEmpty(cosmosConnectionString))
+{
+    builder.Services.AddSingleton<ICosmosDbService, InMemoryDbService>();
+}
+else
+{
+    builder.Services.AddScoped<ICosmosDbService, CosmosDbService>();
+}
 builder.Services.AddScoped<INewsDashboardService, NewsDashboardService>();
 
 // Background service for periodic fetching
@@ -70,6 +77,15 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+if (string.IsNullOrEmpty(cosmosConnectionString))
+{
+    app.Logger.LogInformation("Storage mode: In-Memory (no Cosmos DB connection string configured)");
+}
+else
+{
+    app.Logger.LogInformation("Storage mode: Cosmos DB");
+}
 
 // Initialize Cosmos DB containers in background
 if (!string.IsNullOrEmpty(cosmosConnectionString))
