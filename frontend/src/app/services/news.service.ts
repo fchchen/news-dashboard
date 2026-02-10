@@ -123,7 +123,7 @@ export class NewsService {
       return this.getCached<PagedResponse<NewsItemDto>>(`${this.apiUrl}/rss.json`).pipe(
         map(data => {
           let items = data.items;
-          if (source) items = items.filter(i => i.source === source);
+          if (source) items = items.filter(i => i.metadata?.['feedName'] === source);
           return this.staticPage(items, page, pageSize);
         })
       );
