@@ -6,6 +6,10 @@
       "version": "22"
     }
   },
+  "remoteEnv": {
+    "ASPNETCORE_URLS": "http://localhost:5000",
+    "ASPNETCORE_ENVIRONMENT": "Development"
+  },
   "forwardPorts": [5000, 4200],
   "portsAttributes": {
     "5000": { "label": "API", "onAutoForward": "notify" },
