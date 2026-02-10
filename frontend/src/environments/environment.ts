@@ -1,5 +1,6 @@
 export const environment = {
   production: false,
   useMocks: false,
-  apiUrl: '/api'
+  apiUrl: '/api',
+  staticData: false
 };
