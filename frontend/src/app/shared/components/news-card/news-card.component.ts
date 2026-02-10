@@ -20,7 +20,7 @@ import { NewsItemDto } from '../../../models/news.models';
         <mat-card-subtitle>
           <app-company-badge [company]="item().company" />
           <span class="source-label">{{ sourceLabel() }}</span>
-          <span class="time-ago">{{ timeAgo() }}</span>
+          <span class="time-ago">{{ publishedDate() }} ({{ timeAgo() }})</span>
         </mat-card-subtitle>
       </mat-card-header>
       @if (item().description) {
@@ -125,6 +125,11 @@ export class NewsCardComponent {
       case 'RssFeed': return this.item().metadata['feedName'] ?? 'RSS';
       default: return this.item().source;
     }
+  });
+
+  publishedDate = computed(() => {
+    const date = new Date(this.item().publishedAt);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   });
 
   timeAgo = computed(() => {
