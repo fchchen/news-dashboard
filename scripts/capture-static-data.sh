@@ -33,18 +33,43 @@ for i in $(seq 1 60); do
   sleep 1
 done
 
-# Wait for background service to fetch data (30s delay + fetch time)
-echo "==> Waiting for data to be available..."
-for i in $(seq 1 120); do
-  RESULT=$(curl -sf "$API_URL/api/hackernews?page=1&pageSize=1" 2>/dev/null || echo '{}')
-  TOTAL=$(echo "$RESULT" | grep -o '"totalCount":[0-9]*' | grep -o '[0-9]*' || echo "0")
-  if [ "$TOTAL" -gt 0 ]; then
-    echo "    Data available after ${i}s (totalCount=$TOTAL)"
+# Wait for all data sources to be populated (30s startup delay + fetch time)
+echo "==> Waiting for all data sources..."
+HN_READY=false
+GH_READY=false
+RSS_READY=false
+for i in $(seq 1 180); do
+  if [ "$HN_READY" = false ]; then
+    RESULT=$(curl -sf "$API_URL/api/hackernews?page=1&pageSize=1" 2>/dev/null || echo '{}')
+    TOTAL=$(echo "$RESULT" | grep -o '"totalCount":[0-9]*' | grep -o '[0-9]*' || echo "0")
+    if [ "$TOTAL" -gt 0 ]; then
+      echo "    HackerNews ready after ${i}s (totalCount=$TOTAL)"
+      HN_READY=true
+    fi
+  fi
+  if [ "$GH_READY" = false ]; then
+    RESULT=$(curl -sf "$API_URL/api/github/releases?page=1&pageSize=1" 2>/dev/null || echo '{}')
+    TOTAL=$(echo "$RESULT" | grep -o '"totalCount":[0-9]*' | grep -o '[0-9]*' || echo "0")
+    if [ "$TOTAL" -gt 0 ]; then
+      echo "    GitHub Releases ready after ${i}s (totalCount=$TOTAL)"
+      GH_READY=true
+    fi
+  fi
+  if [ "$RSS_READY" = false ]; then
+    RESULT=$(curl -sf "$API_URL/api/rss?page=1&pageSize=1" 2>/dev/null || echo '{}')
+    TOTAL=$(echo "$RESULT" | grep -o '"totalCount":[0-9]*' | grep -o '[0-9]*' || echo "0")
+    if [ "$TOTAL" -gt 0 ]; then
+      echo "    RSS ready after ${i}s (totalCount=$TOTAL)"
+      RSS_READY=true
+    fi
+  fi
+  if [ "$HN_READY" = true ] && [ "$GH_READY" = true ] && [ "$RSS_READY" = true ]; then
+    echo "    All sources ready after ${i}s"
     break
   fi
-  if [ "$i" -eq 120 ]; then
-    echo "ERROR: No data available after 120s"
-    exit 1
+  if [ "$i" -eq 180 ]; then
+    echo "WARNING: Timeout after 180s. HN=$HN_READY GH=$GH_READY RSS=$RSS_READY"
+    echo "         Proceeding with available data."
   fi
   sleep 2
 done
