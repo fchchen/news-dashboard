@@ -24,23 +24,27 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Check Eastern time window
+        id: timecheck
         if: github.event_name == 'schedule'
         run: |
           HOUR=$(TZ='America/New_York' date +%H)
           echo "Eastern hour: $HOUR"
           if [ "$HOUR" -lt 8 ] || [ "$HOUR" -ge 22 ]; then
             echo "Outside 8AM-10PM Eastern, skipping."
-            exit 1
+            echo "skip=true" >> "$GITHUB_OUTPUT"
           fi
 
       - uses: actions/checkout@v4
+        if: steps.timecheck.outputs.skip != 'true'
 
       - name: Setup .NET 8
+        if: steps.timecheck.outputs.skip != 'true'
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
       - name: Setup Node 22
+        if: steps.timecheck.outputs.skip != 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -48,31 +52,39 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Restore .NET dependencies
+        if: steps.timecheck.outputs.skip != 'true'
         run: dotnet restore
 
       - name: Install frontend dependencies
+        if: steps.timecheck.outputs.skip != 'true'
         run: npm ci
         working-directory: frontend
 
       - name: Capture static data from API
+        if: steps.timecheck.outputs.skip != 'true'
         run: bash scripts/capture-static-data.sh
 
       - name: Build Angular for production
+        if: steps.timecheck.outputs.skip != 'true'
         run: npx ng build --base-href /news-dashboard/
         working-directory: frontend
 
       - name: Add 404.html for SPA routing
+        if: steps.timecheck.outputs.skip != 'true'
         run: cp frontend/dist/frontend/browser/index.html frontend/dist/frontend/browser/404.html
 
       - name: Setup Pages
+        if: steps.timecheck.outputs.skip != 'true'
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
+        if: steps.timecheck.outputs.skip != 'true'
         uses: actions/upload-pages-artifact@v3
         with:
           path: frontend/dist/frontend/browser
           retention-days: 1
 
       - name: Deploy to GitHub Pages
+        if: steps.timecheck.outputs.skip != 'true'
         id: deployment
         uses: actions/deploy-pages@v4
