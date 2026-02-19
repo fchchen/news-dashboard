@@ -14,6 +14,10 @@ A real-time dashboard tracking AI news from Anthropic, OpenAI, Google Gemini, an
 |---|---|
 | ![GitHub Releases](screenshots/03-github-releases.png) | ![RSS Feeds](screenshots/04-rss-feeds.png) |
 
+| Google Gemini News |
+|---|
+| ![Google Gemini News](screenshots/05-google-badge.png) |
+
 ## Data Sources
 
 ### Hacker News
