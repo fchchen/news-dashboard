@@ -9,7 +9,8 @@ public static class TrackedRepos
         ("getcursor", "cursor", "Other"),
         ("continuedev", "continue", "Other"),
         ("paul-gauthier", "aider", "Other"),
-        ("cline", "cline", "Other")
+        ("cline", "cline", "Other"),
+        ("google-gemini", "gemini-cli", "Google")
     ];
 }
 
@@ -22,6 +23,7 @@ public static class FeedSources
                 ?? "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml",
             "Anthropic", false),
         ["OpenAI News"] = new("https://openai.com/news/rss.xml", "OpenAI", false),
+        ["Google AI Blog"] = new("https://deepmind.google/blog/rss.xml", "Google", false),
         ["TechCrunch AI"] = new("https://techcrunch.com/category/artificial-intelligence/feed/", "Various", true),
         ["The Verge AI"] = new("https://www.theverge.com/rss/ai-artificial-intelligence/index.xml", "Various", true),
         ["Ars Technica AI"] = new("https://feeds.arstechnica.com/arstechnica/index", "Various", true),

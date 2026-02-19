@@ -59,13 +59,13 @@ public class HackerNewsServiceTests
     }
 
     [Fact]
-    public void MapToNewsItem_ShouldDetectBothCompanies()
+    public void MapToNewsItem_ShouldDetectMultipleCompanies()
     {
         var hnItem = new HackerNewsApiItem(12345, "Claude vs ChatGPT comparison", "https://example.com", "user", 100, 50, 1738000000, "story");
 
         var result = HackerNewsService.MapToNewsItem(hnItem);
 
-        result.Company.Should().Be("Both");
+        result.Company.Should().Be("Multiple");
     }
 
     [Fact]

@@ -1,6 +1,6 @@
 # AI News Intelligence Dashboard
 
-A real-time dashboard tracking AI news from Anthropic, OpenAI, and popular AI CLI tools. Aggregates content from Hacker News, GitHub Releases, and RSS feeds — all from free, public data sources with no API keys required.
+A real-time dashboard tracking AI news from Anthropic, OpenAI, Google Gemini, and popular AI CLI tools. Aggregates content from Hacker News, GitHub Releases, and RSS feeds — all from free, public data sources with no API keys required.
 
 **Live site:** [fchchen.github.io/news-dashboard](https://fchchen.github.io/news-dashboard/)
 
@@ -17,7 +17,7 @@ A real-time dashboard tracking AI news from Anthropic, OpenAI, and popular AI CL
 ## Data Sources
 
 ### Hacker News
-Top 500 stories filtered by AI keywords (claude, openai, chatgpt, copilot, llm, agentic, etc.) via the Firebase API.
+Top 500 stories filtered by AI keywords (claude, openai, gemini, chatgpt, copilot, llm, agentic, etc.) via the Firebase API.
 
 ### GitHub Releases
 Tracked repositories:
@@ -27,10 +27,12 @@ Tracked repositories:
 - [paul-gauthier/aider](https://github.com/paul-gauthier/aider)
 - [cline/cline](https://github.com/cline/cline)
 - [continuedev/continue](https://github.com/continuedev/continue)
+- [google-gemini/gemini-cli](https://github.com/google-gemini/gemini-cli)
 
 ### RSS Feeds
 - Anthropic News (scraped from anthropic.com/news)
 - OpenAI News
+- Google AI Blog (DeepMind)
 - TechCrunch AI
 - The Verge AI
 - Ars Technica AI
@@ -45,7 +47,7 @@ Tracked repositories:
 
 ## How It Works
 
-The site is deployed to GitHub Pages as a static site. A GitHub Actions workflow runs every 2 hours (8 AM–10 PM Eastern):
+The site is deployed to GitHub Pages as a static site. A GitHub Actions workflow runs every hour (8 AM–10 PM Eastern):
 
 1. Starts the .NET API in the background
 2. Scrapes Anthropic's news page (no RSS available) to generate a local feed

@@ -46,10 +46,20 @@ const mockHnItems: NewsItemDto[] = [
     title: 'Cursor vs Claude Code vs Copilot: 2026 AI coding tools comparison',
     url: 'https://example.com/comparison',
     description: 'An in-depth comparison of the leading AI coding assistants, testing them on real-world projects.',
-    score: 189, author: 'devtools_fan', company: 'Both',
+    score: 189, author: 'devtools_fan', company: 'Multiple',
     tags: ['cursor', 'claude code', 'copilot', 'ai coding'],
     publishedAt: new Date(Date.now() - 18 * 3600000).toISOString(),
     metadata: { commentCount: '67', hnUrl: 'https://news.ycombinator.com/item?id=41234571' }
+  },
+  {
+    id: '6', externalId: 'hn-41234572', source: 'HackerNews',
+    title: 'Google Gemini CLI launches with deep Workspace integration',
+    url: 'https://blog.google/technology/ai/gemini-cli-launch',
+    description: 'Google releases Gemini CLI, a terminal-based AI coding assistant powered by Gemini models with native Google Workspace integration.',
+    score: 312, author: 'googler', company: 'Google',
+    tags: ['gemini', 'google ai', 'ai cli', 'ai coding'],
+    publishedAt: new Date(Date.now() - 6 * 3600000).toISOString(),
+    metadata: { commentCount: '78', hnUrl: 'https://news.ycombinator.com/item?id=41234572' }
   }
 ];
 
@@ -113,6 +123,16 @@ const mockReleases: NewsItemDto[] = [
     tags: ['continue', 'release', 'cli', 'agentic'],
     publishedAt: new Date(Date.now() - 120 * 3600000).toISOString(),
     metadata: { version: '1.2.0', repoFullName: 'continuedev/continue', isPreRelease: 'false' }
+  },
+  {
+    id: '16', externalId: 'google-gemini/gemini-cli@v0.1.0', source: 'GitHubRelease',
+    title: 'Gemini CLI v0.1.0',
+    url: 'https://github.com/google-gemini/gemini-cli/releases/tag/v0.1.0',
+    description: '## Initial Release\n- AI-powered terminal assistant using Gemini models\n- Google Workspace integration\n- Multi-turn conversation support\n- Sandbox mode for safe execution',
+    score: 0, author: 'google-gemini', company: 'Google',
+    tags: ['gemini', 'release', 'cli', 'google ai'],
+    publishedAt: new Date(Date.now() - 36 * 3600000).toISOString(),
+    metadata: { version: '0.1.0', repoFullName: 'google-gemini/gemini-cli', isPreRelease: 'false' }
   }
 ];
 
@@ -142,7 +162,7 @@ const mockBlogPosts: NewsItemDto[] = [
     title: 'The rise of agentic AI: How autonomous coding tools are reshaping development',
     url: 'https://techcrunch.com/agentic-ai-tools',
     description: 'AI coding assistants have evolved from autocomplete to fully autonomous agents. We look at Claude Code, Codex CLI, and how they compare.',
-    score: 0, author: 'Sarah Perez', company: 'Both',
+    score: 0, author: 'Sarah Perez', company: 'Multiple',
     tags: ['agentic', 'ai agent', 'claude code', 'codex', 'techcrunch-ai'],
     publishedAt: new Date(Date.now() - 14 * 3600000).toISOString(),
     metadata: { feedName: 'TechCrunch AI', feedUrl: 'https://techcrunch.com/category/artificial-intelligence/feed/' }
@@ -156,6 +176,16 @@ const mockBlogPosts: NewsItemDto[] = [
     tags: ['anthropic', 'the-verge-ai'],
     publishedAt: new Date(Date.now() - 20 * 3600000).toISOString(),
     metadata: { feedName: 'The Verge AI', feedUrl: 'https://www.theverge.com/rss/ai-artificial-intelligence/index.xml' }
+  },
+  {
+    id: '24', externalId: 'rss-mno345', source: 'RssFeed',
+    title: 'Gemini 2.5 Pro: Our most capable model yet',
+    url: 'https://deepmind.google/blog/gemini-2-5-pro',
+    description: 'Introducing Gemini 2.5 Pro, our latest and most capable AI model with breakthrough performance on coding, reasoning, and multimodal tasks.',
+    score: 0, author: null, company: 'Google',
+    tags: ['gemini', 'google ai', 'deepmind', 'model release'],
+    publishedAt: new Date(Date.now() - 7 * 3600000).toISOString(),
+    metadata: { feedName: 'Google AI Blog', feedUrl: 'https://deepmind.google/blog/rss.xml' }
   }
 ];
 
@@ -163,7 +193,8 @@ export const mockDashboard: DashboardSummaryResponse = {
   stats: { hackerNewsCount: 24, gitHubReleaseCount: 8, rssArticleCount: 31, totalCount: 63 },
   companies: [
     { company: 'Anthropic', itemCount: 18 },
-    { company: 'OpenAI', itemCount: 12 }
+    { company: 'OpenAI', itemCount: 12 },
+    { company: 'Google', itemCount: 10 }
   ],
   trendingTopics: [
     { topic: 'claude-code', mentionCount: 14 },
@@ -193,6 +224,7 @@ export const mockRssResponse: PagedResponse<NewsItemDto> = {
 export const mockRssSources: RssFeedSourceDto[] = [
   { name: 'Anthropic Blog', url: 'https://www.anthropic.com/news/rss', company: 'Anthropic', filterRequired: false },
   { name: 'OpenAI Blog', url: 'https://openai.com/blog/rss/', company: 'OpenAI', filterRequired: false },
+  { name: 'Google AI Blog', url: 'https://deepmind.google/blog/rss.xml', company: 'Google', filterRequired: false },
   { name: 'TechCrunch AI', url: 'https://techcrunch.com/category/artificial-intelligence/feed/', company: 'Various', filterRequired: true },
   { name: 'The Verge AI', url: 'https://www.theverge.com/rss/ai-artificial-intelligence/index.xml', company: 'Various', filterRequired: true },
   { name: 'Ars Technica AI', url: 'https://feeds.arstechnica.com/arstechnica/index', company: 'Various', filterRequired: true },

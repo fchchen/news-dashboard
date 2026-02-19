@@ -4,7 +4,7 @@ on:
   push:
     branches: [master]
   schedule:
-    - cron: '0 */2 * * *' # every 2h; filtered to 8AM-10PM Eastern below
+    - cron: '0 * * * *' # every 1h; filtered to 8AM-10PM Eastern below
   workflow_dispatch:
 
 permissions:

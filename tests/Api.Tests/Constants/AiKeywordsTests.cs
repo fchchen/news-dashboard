@@ -56,7 +56,11 @@ public class AiKeywordsTests
     [InlineData("OpenAI launches GPT-5", "OpenAI")]
     [InlineData("ChatGPT new features", "OpenAI")]
     [InlineData("Codex CLI improvements", "OpenAI")]
-    [InlineData("Claude vs ChatGPT comparison", "Both")]
+    [InlineData("Gemini 2.5 Pro released", "Google")]
+    [InlineData("DeepMind publishes new research", "Google")]
+    [InlineData("Google AI Studio update", "Google")]
+    [InlineData("Claude vs ChatGPT comparison", "Multiple")]
+    [InlineData("Gemini vs Claude comparison", "Multiple")]
     [InlineData("Cursor IDE update", "Other")]
     [InlineData("Random tech news", "Other")]
     public void DetectCompany_ShouldIdentifyCorrectCompany(string text, string expectedCompany)

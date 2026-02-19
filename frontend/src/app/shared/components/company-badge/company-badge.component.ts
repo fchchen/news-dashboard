@@ -22,7 +22,8 @@ import { MatChipsModule } from '@angular/material/chips';
     }
     .badge-anthropic { background: #d97706; }
     .badge-openai { background: #10a37f; }
-    .badge-both { background: #7c3aed; }
+    .badge-google { background: #4285F4; }
+    .badge-multiple { background: #7c3aed; }
     .badge-other { background: #6b7280; }
     .badge-various { background: #6b7280; }
   `]

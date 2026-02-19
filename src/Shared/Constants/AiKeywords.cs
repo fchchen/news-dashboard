@@ -6,6 +6,7 @@ public static class AiKeywords
     [
         "claude", "claude code", "anthropic",
         "openai", "chatgpt", "codex", "gpt-4", "gpt-5",
+        "gemini", "google ai", "deepmind",
         "agentic", "ai agent", "ai coding",
         "cursor", "windsurf", "copilot", "cline", "aider"
     ];
@@ -41,10 +42,13 @@ public static class AiKeywords
         bool isAnthropic = lower.Contains("anthropic") || lower.Contains("claude");
         bool isOpenAi = lower.Contains("openai") || lower.Contains("chatgpt") ||
                         lower.Contains("codex") || lower.Contains("gpt-4") || lower.Contains("gpt-5");
+        bool isGoogle = lower.Contains("gemini") || lower.Contains("deepmind") || lower.Contains("google ai");
 
-        if (isAnthropic && !isOpenAi) return "Anthropic";
-        if (isOpenAi && !isAnthropic) return "OpenAI";
-        if (isAnthropic && isOpenAi) return "Both";
+        int count = (isAnthropic ? 1 : 0) + (isOpenAi ? 1 : 0) + (isGoogle ? 1 : 0);
+        if (count >= 2) return "Multiple";
+        if (isAnthropic) return "Anthropic";
+        if (isOpenAi) return "OpenAI";
+        if (isGoogle) return "Google";
         return "Other";
     }
 }
