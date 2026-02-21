@@ -3,18 +3,11 @@ using NewsDashboard.Shared.Models;
 
 namespace NewsDashboard.Api.Services;
 
-public class InMemoryDbService : ICosmosDbService
+public class InMemoryDbService(ILogger<InMemoryDbService> logger) : ICosmosDbService
 {
     private readonly ConcurrentDictionary<string, NewsItem> _newsItems = new();
     private readonly object _snapshotLock = new();
     private TrendSnapshot? _latestSnapshot;
-    private readonly ILogger<InMemoryDbService> _logger;
-
-    public InMemoryDbService(ILogger<InMemoryDbService> logger)
-    {
-        _logger = logger;
-        _logger.LogInformation("Using in-memory storage (no Cosmos DB)");
-    }
 
     public Task<NewsItem?> GetNewsItemAsync(string id, string source)
     {
@@ -97,7 +90,7 @@ public class InMemoryDbService : ICosmosDbService
             }
         }
 
-        _logger.LogInformation("Batch upserted {Count} news items (in-memory)", items.Count());
+        logger.LogInformation("Batch upserted {Count} news items (in-memory)", items.Count());
         return Task.CompletedTask;
     }
 
@@ -116,7 +109,7 @@ public class InMemoryDbService : ICosmosDbService
             _latestSnapshot = snapshot;
         }
 
-        _logger.LogInformation("Upserted trend snapshot {Id} (in-memory)", snapshot.Id);
+        logger.LogInformation("Upserted trend snapshot {Id} (in-memory)", snapshot.Id);
         return Task.FromResult(snapshot);
     }
 }

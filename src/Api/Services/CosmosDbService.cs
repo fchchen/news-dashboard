@@ -5,20 +5,12 @@ using NewsDashboard.Shared.Models;
 
 namespace NewsDashboard.Api.Services;
 
-public class CosmosDbService : ICosmosDbService
+public class CosmosDbService(CosmosClient cosmosClient, ILogger<CosmosDbService> logger) : ICosmosDbService
 {
     private static readonly SemaphoreSlim UpsertThrottle = new(10, 10);
 
-    private readonly Container _newsContainer;
-    private readonly Container _snapshotsContainer;
-    private readonly ILogger<CosmosDbService> _logger;
-
-    public CosmosDbService(CosmosClient cosmosClient, ILogger<CosmosDbService> logger)
-    {
-        _logger = logger;
-        _newsContainer = cosmosClient.GetContainer(CosmosConstants.Database, CosmosConstants.NewsItemsContainer);
-        _snapshotsContainer = cosmosClient.GetContainer(CosmosConstants.Database, CosmosConstants.SnapshotsContainer);
-    }
+    private readonly Container _newsContainer = cosmosClient.GetContainer(CosmosConstants.Database, CosmosConstants.NewsItemsContainer);
+    private readonly Container _snapshotsContainer = cosmosClient.GetContainer(CosmosConstants.Database, CosmosConstants.SnapshotsContainer);
 
     public async Task<NewsItem?> GetNewsItemAsync(string id, string source)
     {
@@ -124,7 +116,7 @@ public class CosmosDbService : ICosmosDbService
             }
         });
         await Task.WhenAll(tasks);
-        _logger.LogInformation("Batch upserted news items");
+        logger.LogInformation("Batch upserted news items");
     }
 
     public async Task<TrendSnapshot?> GetLatestSnapshotAsync()
@@ -146,7 +138,7 @@ public class CosmosDbService : ICosmosDbService
     public async Task<TrendSnapshot> UpsertSnapshotAsync(TrendSnapshot snapshot)
     {
         var response = await _snapshotsContainer.UpsertItemAsync(snapshot, new PartitionKey(snapshot.Id));
-        _logger.LogInformation("Upserted trend snapshot {Id}", snapshot.Id);
+        logger.LogInformation("Upserted trend snapshot {Id}", snapshot.Id);
         return response.Resource;
     }
 }

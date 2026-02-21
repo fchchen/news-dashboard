@@ -8,29 +8,18 @@ using NewsDashboard.Shared.Models;
 
 namespace NewsDashboard.Functions.Functions;
 
-public class FetchGitHubReleasesFunction
+public class FetchGitHubReleasesFunction(Container container, IHttpClientFactory httpClientFactory, ILogger<FetchGitHubReleasesFunction> logger)
 {
     private const string BaseUrl = "https://api.github.com";
 
-    private readonly Container _container;
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly ILogger<FetchGitHubReleasesFunction> _logger;
-
     private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
-
-    public FetchGitHubReleasesFunction(Container container, IHttpClientFactory httpClientFactory, ILogger<FetchGitHubReleasesFunction> logger)
-    {
-        _container = container;
-        _httpClientFactory = httpClientFactory;
-        _logger = logger;
-    }
 
     [Function(nameof(FetchGitHubReleases))]
     public async Task FetchGitHubReleases([TimerTrigger("0 */30 * * * *")] TimerInfo timerInfo)
     {
-        _logger.LogInformation("FetchGitHubReleases triggered at {Time}", DateTime.UtcNow);
+        logger.LogInformation("FetchGitHubReleases triggered at {Time}", DateTime.UtcNow);
 
-        var httpClient = _httpClientFactory.CreateClient();
+        var httpClient = httpClientFactory.CreateClient();
         httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("NewsDashboard/1.0");
         httpClient.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
 
@@ -72,16 +61,16 @@ public class FetchGitHubReleasesFunction
                         }
                     };
 
-                    await _container.UpsertItemAsync(item, new PartitionKey(item.Source));
+                    await container.UpsertItemAsync(item, new PartitionKey(item.Source));
                     totalCount++;
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to fetch releases for {Owner}/{Repo}", owner, repo);
+                logger.LogWarning(ex, "Failed to fetch releases for {Owner}/{Repo}", owner, repo);
             }
         }
 
-        _logger.LogInformation("FetchGitHubReleases completed. Upserted {Count} items", totalCount);
+        logger.LogInformation("FetchGitHubReleases completed. Upserted {Count} items", totalCount);
     }
 }

@@ -5,36 +5,31 @@ using NewsDashboard.Shared.Models;
 
 namespace NewsDashboard.Api.Services;
 
-public class GitHubReleasesService : IGitHubReleasesService
+public class GitHubReleasesService(HttpClient httpClient, ICosmosDbService cosmosDb, ILogger<GitHubReleasesService> logger) : IGitHubReleasesService
 {
     private const string BaseUrl = "https://api.github.com";
     private static readonly string SourceName = SourceNames.GitHubRelease;
-
-    private readonly HttpClient _httpClient;
-    private readonly ICosmosDbService _cosmosDb;
-    private readonly ILogger<GitHubReleasesService> _logger;
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
     };
 
-    public GitHubReleasesService(HttpClient httpClient, ICosmosDbService cosmosDb, ILogger<GitHubReleasesService> logger)
-    {
-        _httpClient = httpClient;
-        _cosmosDb = cosmosDb;
-        _logger = logger;
+    private readonly bool _ = InitializeHttpClient(httpClient);
 
-        if (_httpClient.DefaultRequestHeaders.UserAgent.Count == 0)
+    private static bool InitializeHttpClient(HttpClient client)
+    {
+        if (client.DefaultRequestHeaders.UserAgent.Count == 0)
         {
-            _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("NewsDashboard/1.0");
-            _httpClient.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("NewsDashboard/1.0");
+            client.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
         }
+        return true;
     }
 
     public async Task<IEnumerable<NewsItem>> FetchAllReleasesAsync()
     {
-        _logger.LogInformation("Fetching releases for all tracked repos");
+        logger.LogInformation("Fetching releases for all tracked repos");
         var allItems = new List<NewsItem>();
 
         foreach (var (owner, repo, company) in TrackedRepos.Repos)
@@ -46,16 +41,16 @@ public class GitHubReleasesService : IGitHubReleasesService
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to fetch releases for {Owner}/{Repo}", owner, repo);
+                logger.LogWarning(ex, "Failed to fetch releases for {Owner}/{Repo}", owner, repo);
             }
         }
 
         if (allItems.Count > 0)
         {
-            await _cosmosDb.UpsertManyNewsItemsAsync(allItems);
+            await cosmosDb.UpsertManyNewsItemsAsync(allItems);
         }
 
-        _logger.LogInformation("Fetched {Count} total releases", allItems.Count);
+        logger.LogInformation("Fetched {Count} total releases", allItems.Count);
         return allItems;
     }
 
@@ -68,18 +63,18 @@ public class GitHubReleasesService : IGitHubReleasesService
 
     public async Task<IEnumerable<NewsItem>> GetCachedItemsAsync(int page, int pageSize)
     {
-        return await _cosmosDb.GetNewsItemsAsync(page, pageSize, SourceName);
+        return await cosmosDb.GetNewsItemsAsync(page, pageSize, SourceName);
     }
 
     public async Task<int> GetCachedCountAsync()
     {
-        return await _cosmosDb.GetNewsItemCountAsync(SourceName);
+        return await cosmosDb.GetNewsItemCountAsync(SourceName);
     }
 
     public async Task<IEnumerable<NewsItem>> GetCachedByRepoAsync(string owner, string repo, int page, int pageSize)
     {
         var repoFullName = $"{owner}/{repo}";
-        var allItems = await _cosmosDb.GetNewsItemsAsync(1, 500, SourceName);
+        var allItems = await cosmosDb.GetNewsItemsAsync(1, 500, SourceName);
         var filtered = allItems.Where(i => i.Metadata.GetValueOrDefault("repoFullName") == repoFullName);
         return filtered.Skip((page - 1) * pageSize).Take(pageSize);
     }
@@ -87,16 +82,16 @@ public class GitHubReleasesService : IGitHubReleasesService
     public async Task<int> GetCachedByRepoCountAsync(string owner, string repo)
     {
         var repoFullName = $"{owner}/{repo}";
-        var allItems = await _cosmosDb.GetNewsItemsAsync(1, 500, SourceNames.GitHubRelease);
+        var allItems = await cosmosDb.GetNewsItemsAsync(1, 500, SourceNames.GitHubRelease);
         return allItems.Count(i => i.Metadata.GetValueOrDefault("repoFullName") == repoFullName);
     }
 
     private async Task<List<NewsItem>> FetchReleasesForRepoInternalAsync(string owner, string repo, string company)
     {
-        _logger.LogInformation("Fetching releases for {Owner}/{Repo}", owner, repo);
+        logger.LogInformation("Fetching releases for {Owner}/{Repo}", owner, repo);
 
         var url = $"{BaseUrl}/repos/{owner}/{repo}/releases?per_page=10";
-        var response = await _httpClient.GetStringAsync(url);
+        var response = await httpClient.GetStringAsync(url);
         var releases = JsonSerializer.Deserialize<List<GitHubReleaseApiItem>>(response, JsonOptions) ?? [];
 
         return releases.Select(r => MapToNewsItem(r, owner, repo, company)).ToList();

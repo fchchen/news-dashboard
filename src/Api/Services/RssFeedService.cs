@@ -6,22 +6,11 @@ using NewsDashboard.Shared.Models;
 
 namespace NewsDashboard.Api.Services;
 
-public class RssFeedService : IRssFeedService
+public class RssFeedService(HttpClient httpClient, ICosmosDbService cosmosDb, ILogger<RssFeedService> logger) : IRssFeedService
 {
-    private readonly HttpClient _httpClient;
-    private readonly ICosmosDbService _cosmosDb;
-    private readonly ILogger<RssFeedService> _logger;
-
-    public RssFeedService(HttpClient httpClient, ICosmosDbService cosmosDb, ILogger<RssFeedService> logger)
-    {
-        _httpClient = httpClient;
-        _cosmosDb = cosmosDb;
-        _logger = logger;
-    }
-
     public async Task<IEnumerable<NewsItem>> FetchAllFeedsAsync()
     {
-        _logger.LogInformation("Fetching all RSS feeds");
+        logger.LogInformation("Fetching all RSS feeds");
         var allItems = new List<NewsItem>();
 
         foreach (var (feedName, feedSource) in FeedSources.Feeds)
@@ -33,16 +22,16 @@ public class RssFeedService : IRssFeedService
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to fetch RSS feed: {FeedName}", feedName);
+                logger.LogWarning(ex, "Failed to fetch RSS feed: {FeedName}", feedName);
             }
         }
 
         if (allItems.Count > 0)
         {
-            await _cosmosDb.UpsertManyNewsItemsAsync(allItems);
+            await cosmosDb.UpsertManyNewsItemsAsync(allItems);
         }
 
-        _logger.LogInformation("Fetched {Count} total RSS items", allItems.Count);
+        logger.LogInformation("Fetched {Count} total RSS items", allItems.Count);
         return allItems;
     }
 
@@ -52,23 +41,23 @@ public class RssFeedService : IRssFeedService
         // (feedName is stored in metadata, not a Cosmos-queryable field)
         if (!string.IsNullOrEmpty(feedName))
         {
-            var allItems = await _cosmosDb.GetNewsItemsAsync(1, 500, SourceNames.RssFeed);
+            var allItems = await cosmosDb.GetNewsItemsAsync(1, 500, SourceNames.RssFeed);
             var filtered = allItems.Where(i => i.Metadata.GetValueOrDefault("feedName") == feedName);
             return filtered.Skip((page - 1) * pageSize).Take(pageSize);
         }
 
-        return await _cosmosDb.GetNewsItemsAsync(page, pageSize, SourceNames.RssFeed);
+        return await cosmosDb.GetNewsItemsAsync(page, pageSize, SourceNames.RssFeed);
     }
 
     public async Task<int> GetCachedCountAsync(string? feedName = null)
     {
         if (!string.IsNullOrEmpty(feedName))
         {
-            var allItems = await _cosmosDb.GetNewsItemsAsync(1, 500, SourceNames.RssFeed);
+            var allItems = await cosmosDb.GetNewsItemsAsync(1, 500, SourceNames.RssFeed);
             return allItems.Count(i => i.Metadata.GetValueOrDefault("feedName") == feedName);
         }
 
-        return await _cosmosDb.GetNewsItemCountAsync(SourceNames.RssFeed);
+        return await cosmosDb.GetNewsItemCountAsync(SourceNames.RssFeed);
     }
 
     public IEnumerable<RssFeedSourceDto> GetAvailableSources()
@@ -78,9 +67,9 @@ public class RssFeedService : IRssFeedService
 
     private async Task<List<NewsItem>> FetchFeedAsync(string feedName, FeedSource feedSource)
     {
-        _logger.LogInformation("Fetching RSS feed: {FeedName}", feedName);
+        logger.LogInformation("Fetching RSS feed: {FeedName}", feedName);
 
-        var stream = await _httpClient.GetStreamAsync(feedSource.Url);
+        var stream = await httpClient.GetStreamAsync(feedSource.Url);
         using var reader = XmlReader.Create(stream);
         var feed = SyndicationFeed.Load(reader);
 
@@ -93,7 +82,7 @@ public class RssFeedService : IRssFeedService
             })
             .ToList();
 
-        _logger.LogInformation("Fetched {Count} items from {FeedName}", items.Count, feedName);
+        logger.LogInformation("Fetched {Count} items from {FeedName}", items.Count, feedName);
         return items;
     }
 

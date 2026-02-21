@@ -8,29 +8,18 @@ using NewsDashboard.Shared.Models;
 
 namespace NewsDashboard.Functions.Functions;
 
-public class FetchHackerNewsFunction
+public class FetchHackerNewsFunction(Container container, IHttpClientFactory httpClientFactory, ILogger<FetchHackerNewsFunction> logger)
 {
     private const string BaseUrl = "https://hacker-news.firebaseio.com/v0";
 
-    private readonly Container _container;
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly ILogger<FetchHackerNewsFunction> _logger;
-
     private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
-
-    public FetchHackerNewsFunction(Container container, IHttpClientFactory httpClientFactory, ILogger<FetchHackerNewsFunction> logger)
-    {
-        _container = container;
-        _httpClientFactory = httpClientFactory;
-        _logger = logger;
-    }
 
     [Function(nameof(FetchHackerNews))]
     public async Task FetchHackerNews([TimerTrigger("0 */15 * * * *")] TimerInfo timerInfo)
     {
-        _logger.LogInformation("FetchHackerNews triggered at {Time}", DateTime.UtcNow);
+        logger.LogInformation("FetchHackerNews triggered at {Time}", DateTime.UtcNow);
 
-        var httpClient = _httpClientFactory.CreateClient();
+        var httpClient = httpClientFactory.CreateClient();
         var topStoriesJson = await httpClient.GetStringAsync($"{BaseUrl}/topstories.json");
         var topIds = JsonSerializer.Deserialize<List<int>>(topStoriesJson) ?? [];
 
@@ -43,7 +32,7 @@ public class FetchHackerNewsFunction
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to fetch HN story {Id}", id);
+                logger.LogWarning(ex, "Failed to fetch HN story {Id}", id);
                 return null;
             }
         });
@@ -54,7 +43,7 @@ public class FetchHackerNewsFunction
             .Where(s => s is not null && AiKeywords.MatchesAny($"{s.Title} {s.Url}"))
             .ToList();
 
-        _logger.LogInformation("Found {Count} AI-related HN stories", filtered.Count);
+        logger.LogInformation("Found {Count} AI-related HN stories", filtered.Count);
 
         foreach (var story in filtered)
         {
@@ -78,9 +67,9 @@ public class FetchHackerNewsFunction
                 }
             };
 
-            await _container.UpsertItemAsync(item, new PartitionKey(item.Source));
+            await container.UpsertItemAsync(item, new PartitionKey(item.Source));
         }
 
-        _logger.LogInformation("FetchHackerNews completed. Upserted {Count} items", filtered.Count);
+        logger.LogInformation("FetchHackerNews completed. Upserted {Count} items", filtered.Count);
     }
 }

@@ -8,25 +8,15 @@ using NewsDashboard.Shared.Models;
 
 namespace NewsDashboard.Functions.Functions;
 
-public class FetchRssFeedsFunction
+public class FetchRssFeedsFunction(Container container, IHttpClientFactory httpClientFactory, ILogger<FetchRssFeedsFunction> logger)
 {
-    private readonly Container _container;
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly ILogger<FetchRssFeedsFunction> _logger;
-
-    public FetchRssFeedsFunction(Container container, IHttpClientFactory httpClientFactory, ILogger<FetchRssFeedsFunction> logger)
-    {
-        _container = container;
-        _httpClientFactory = httpClientFactory;
-        _logger = logger;
-    }
 
     [Function(nameof(FetchRssFeeds))]
     public async Task FetchRssFeeds([TimerTrigger("0 */20 * * * *")] TimerInfo timerInfo)
     {
-        _logger.LogInformation("FetchRssFeeds triggered at {Time}", DateTime.UtcNow);
+        logger.LogInformation("FetchRssFeeds triggered at {Time}", DateTime.UtcNow);
 
-        var httpClient = _httpClientFactory.CreateClient();
+        var httpClient = httpClientFactory.CreateClient();
         var totalCount = 0;
 
         foreach (var (feedName, feedSource) in FeedSources.Feeds)
@@ -79,16 +69,16 @@ public class FetchRssFeedsFunction
                         }
                     };
 
-                    await _container.UpsertItemAsync(item, new PartitionKey(item.Source));
+                    await container.UpsertItemAsync(item, new PartitionKey(item.Source));
                     totalCount++;
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to fetch RSS feed: {FeedName}", feedName);
+                logger.LogWarning(ex, "Failed to fetch RSS feed: {FeedName}", feedName);
             }
         }
 
-        _logger.LogInformation("FetchRssFeeds completed. Upserted {Count} items", totalCount);
+        logger.LogInformation("FetchRssFeeds completed. Upserted {Count} items", totalCount);
     }
 }
