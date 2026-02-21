@@ -9,6 +9,7 @@ public class TrendSnapshot
     public int RssArticleCount { get; set; }
     public int AnthropicItemCount { get; set; }
     public int OpenAiItemCount { get; set; }
+    public int GoogleItemCount { get; set; }
     public List<TrendingTopic> TrendingTopics { get; set; } = [];
 
     /// <summary>

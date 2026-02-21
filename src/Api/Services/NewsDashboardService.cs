@@ -19,13 +19,15 @@ public class NewsDashboardService(
         var rssCount = await cosmosDb.GetNewsItemCountAsync(SourceNames.RssFeed);
         var anthropicCount = await cosmosDb.GetNewsItemCountAsync(company: "Anthropic");
         var openAiCount = await cosmosDb.GetNewsItemCountAsync(company: "OpenAI");
+        var googleCount = await cosmosDb.GetNewsItemCountAsync(company: "Google");
 
         var stats = new DashboardStats(hnCount, ghCount, rssCount, hnCount + ghCount + rssCount);
 
         var companies = new List<CompanyBreakdown>
         {
             new("Anthropic", anthropicCount),
-            new("OpenAI", openAiCount)
+            new("OpenAI", openAiCount),
+            new("Google", googleCount)
         };
 
         // Get hot HN items (highest score)
@@ -115,6 +117,7 @@ public class NewsDashboardService(
         var rssCount = await cosmosDb.GetNewsItemCountAsync(SourceNames.RssFeed);
         var anthropicCount = await cosmosDb.GetNewsItemCountAsync(company: "Anthropic");
         var openAiCount = await cosmosDb.GetNewsItemCountAsync(company: "OpenAI");
+        var googleCount = await cosmosDb.GetNewsItemCountAsync(company: "Google");
 
         var allRecent = await cosmosDb.GetNewsItemsAsync(1, 100);
         var trendingTopics = ComputeTrendingTopics(allRecent)
@@ -128,6 +131,7 @@ public class NewsDashboardService(
             RssArticleCount = rssCount,
             AnthropicItemCount = anthropicCount,
             OpenAiItemCount = openAiCount,
+            GoogleItemCount = googleCount,
             TrendingTopics = trendingTopics
         };
 

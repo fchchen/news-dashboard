@@ -29,6 +29,7 @@ public class NewsDashboardServiceTests
         _cosmosMock.Setup(c => c.GetNewsItemCountAsync("RssFeed", null)).ReturnsAsync(31);
         _cosmosMock.Setup(c => c.GetNewsItemCountAsync(null, "Anthropic")).ReturnsAsync(18);
         _cosmosMock.Setup(c => c.GetNewsItemCountAsync(null, "OpenAI")).ReturnsAsync(12);
+        _cosmosMock.Setup(c => c.GetNewsItemCountAsync(null, "Google")).ReturnsAsync(7);
         _cosmosMock.Setup(c => c.GetNewsItemsAsync(1, 5, "HackerNews", null)).ReturnsAsync([]);
         _cosmosMock.Setup(c => c.GetNewsItemsAsync(1, 4, "GitHubRelease", null)).ReturnsAsync([]);
         _cosmosMock.Setup(c => c.GetNewsItemsAsync(1, 4, "RssFeed", null)).ReturnsAsync([]);
@@ -43,11 +44,13 @@ public class NewsDashboardServiceTests
         result.Stats.GitHubReleaseCount.Should().Be(8);
         result.Stats.RssArticleCount.Should().Be(31);
         result.Stats.TotalCount.Should().Be(63);
-        result.Companies.Should().HaveCount(2);
+        result.Companies.Should().HaveCount(3);
         result.Companies[0].Company.Should().Be("Anthropic");
         result.Companies[0].ItemCount.Should().Be(18);
         result.Companies[1].Company.Should().Be("OpenAI");
         result.Companies[1].ItemCount.Should().Be(12);
+        result.Companies[2].Company.Should().Be("Google");
+        result.Companies[2].ItemCount.Should().Be(7);
     }
 
     [Fact]
