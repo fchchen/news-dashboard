@@ -98,7 +98,7 @@ public class NewsDashboardServiceTests
         await _sut.RefreshAllSourcesAsync();
 
         // Assert
-        _hnMock.Verify(h => h.FetchAndFilterAsync(100), Times.Once);
+        _hnMock.Verify(h => h.FetchAndFilterAsync(500), Times.Once);
         _ghMock.Verify(g => g.FetchAllReleasesAsync(), Times.Once);
         _rssMock.Verify(r => r.FetchAllFeedsAsync(), Times.Once);
         _cosmosMock.Verify(c => c.UpsertSnapshotAsync(It.IsAny<TrendSnapshot>()), Times.Once);
