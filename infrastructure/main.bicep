@@ -7,47 +7,25 @@ param baseName string = 'newsdash'
 @description('Environment name (dev, staging, prod)')
 param environment string = 'dev'
 
+@description('Name of the shared Cosmos DB account (COSMOS_DB_ACCOUNT_NAME output from azure-ai-code-agent deployment)')
+param cosmosAccountName string
+
 var uniqueSuffix = uniqueString(resourceGroup().id)
-var cosmosAccountName = '${baseName}-cosmos-${uniqueSuffix}'
 var appServicePlanName = '${baseName}-plan-${environment}'
 var apiAppName = '${baseName}-api-${environment}'
 var functionAppName = '${baseName}-func-${environment}'
 var storageAccountName = '${baseName}st${uniqueSuffix}'
 var staticWebAppName = '${baseName}-web-${environment}'
 
-// Cosmos DB Account
-resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2024-02-15-preview' = {
+// Cosmos DB Account (shared; owned and created by azure-ai-code-agent)
+resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2024-02-15-preview' existing = {
   name: cosmosAccountName
-  location: location
-  kind: 'GlobalDocumentDB'
-  properties: {
-    databaseAccountOfferType: 'Standard'
-    consistencyPolicy: {
-      defaultConsistencyLevel: 'Session'
-    }
-    locations: [
-      {
-        locationName: location
-        failoverPriority: 0
-        isZoneRedundant: false
-      }
-    ]
-    enableFreeTier: true
-  }
 }
 
-// Cosmos DB Database
-resource cosmosDatabase 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2024-02-15-preview' = {
+// Shared database (owned by azure-ai-code-agent)
+resource cosmosDatabase 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2024-02-15-preview' existing = {
   parent: cosmosAccount
-  name: 'NewsDashboard'
-  properties: {
-    resource: {
-      id: 'NewsDashboard'
-    }
-    options: {
-      throughput: 1000
-    }
-  }
+  name: 'DevDb'
 }
 
 // Cosmos DB Container - NewsItems

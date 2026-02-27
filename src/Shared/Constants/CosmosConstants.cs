@@ -2,7 +2,7 @@ namespace NewsDashboard.Shared.Constants;
 
 public static class CosmosConstants
 {
-    public const string Database = "NewsDashboard";
+    public const string Database = "DevDb";
     public const string NewsItemsContainer = "NewsItems";
     public const string SnapshotsContainer = "Snapshots";
 }
