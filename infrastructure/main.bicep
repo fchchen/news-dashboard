@@ -32,11 +32,7 @@ resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2024-02-15-preview
         isZoneRedundant: false
       }
     ]
-    capabilities: [
-      {
-        name: 'EnableServerless'
-      }
-    ]
+    enableFreeTier: true
   }
 }
 
@@ -47,6 +43,9 @@ resource cosmosDatabase 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2024
   properties: {
     resource: {
       id: 'NewsDashboard'
+    }
+    options: {
+      throughput: 1000
     }
   }
 }
